@@ -18,6 +18,10 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
+app.get("/api",(req,res) => {
+  const theDate= new Date();
+  res.send({"unix" : theDate.getTime(), "utc" : theDate.toUTCString() })
+});
 
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
@@ -31,10 +35,24 @@ app.get(/\/api\/(\d{4})-(\d{2})-(\d{2})/,(req,res) => {
   res.send({"unix" : unixtime, "utc" : new Date(unixtime).toUTCString() })
 });
 
-app.get(/\/api\/([0-9]+$)/,(req,res) => {
+app.get(/\/api\/([-]?[0-9]+$)/,(req,res) => {
   const unixtime= Number(req.params[0]);
   res.send({"unix" : unixtime, "utc" : new Date(unixtime).toUTCString() })
 });
+
+app.get("/api/:month/:day/:year",(req,res) => {
+  const theDate= new Date(req.params.month + "/" + req.params.day + "/" + req.params.year);
+  res.send({"unix" : theDate.getTime(), "utc" : new Date(theDate).toUTCString() })
+});
+
+
+app.get(/\/api\/([\s\S]*)/,(req,res) =>{
+
+    const theDate = new Date(req.params[0]);
+    if(theDate.toString() === "Invalid Date")
+      res.send({"error" : "Invalid Date"});
+    res.send({"unix" : theDate.getTime(), "utc" : theDate.toUTCString()})
+})
 
 
 // listen for requests :)
